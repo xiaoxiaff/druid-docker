@@ -14,10 +14,13 @@ sed -ri 's#druid.metadata.storage.type.*#druid.metadata.storage.type='${DB_TYPE}
 sed -ri 's#druid.metadata.storage.connector.connectURI.*#druid.metadata.storage.connector.connectURI='${DB_CONNECT_URI}'#g' /opt/druid/conf/druid/_common/common.runtime.properties
 sed -ri 's#druid.metadata.storage.connector.user.*#druid.metadata.storage.connector.user='${DB_USERNAME}'#g' /opt/druid/conf/druid/_common/common.runtime.properties
 sed -ri 's#druid.metadata.storage.connector.password.*#druid.metadata.storage.connector.password='${DB_PASSWORD}'#g' /opt/druid/conf/druid/_common/common.runtime.properties
-# sed -ri 's#druid.s3.accessKey.*#druid.s3.accessKey='${S3_ACCESS_KEY}'#g' /opt/druid/conf/druid/_common/common.runtime.properties
-# sed -ri 's#druid.s3.secretKey.*#druid.s3.secretKey='${S3_SECRET_KEY}'#g' /opt/druid/conf/druid/_common/common.runtime.properties
-# sed -ri 's#druid.storage.bucket.*#druid.storage.bucket='${S3_STORAGE_BUCKET}'#g' /opt/druid/conf/druid/_common/common.runtime.properties
-# sed -ri 's#druid.indexer.logs.s3Bucket.*#druid.indexer.logs.s3Bucket='${S3_INDEXING_BUCKET}'#g' /opt/druid/conf/druid/_common/common.runtime.properties
+
+if [ "$DRUID_S3_ACCESS_KEY" != "" ]; then
+    sed -ri 's#druid.s3.accessKey.*#druid.s3.accessKey='${DRUID_S3_ACCESS_KEY}'#g' /opt/druid/conf/druid/_common/common.runtime.properties
+fi
+if [ "$DRUID_S3_SECRET_KEY" != "" ]; then
+    sed -ri 's#druid.s3.secretKey.*#druid.s3.secretKey='${DRUID_S3_SECRET_KEY}'#g' /opt/druid/conf/druid/_common/common.runtime.properties
+fi
 
 if [ "$DRUID_HOSTNAME" != "-" ]; then
     sed -ri 's/druid.host=.*/druid.host='${DRUID_HOSTNAME}'/g' /opt/druid/conf/druid/$1/runtime.properties
@@ -30,6 +33,18 @@ fi
 if [ "$DRUID_USE_CONTAINER_IP" != "-" ]; then
     ipaddress=`ip a|grep "global eth0"|awk '{print $2}'|awk -F '\/' '{print $1}'`
     sed -ri 's/druid.host=.*/druid.host='${ipaddress}'/g' /opt/druid/conf/druid/$1/runtime.properties
+fi
+
+if [ "$DRUID_STORAGE_TYPE" == "s3" ]; then
+    sed -ri 's/druid.storage.type.*/druid.storage.type='${DRUID_STORAGE_TYPE}'/g' /opt/druid/conf/druid/_common/common.runtime.properties
+    sed -ri 's#druid.storage.bucket.*#druid.storage.bucket='${DRUID_STORAGE_BUCKET}'#g' /opt/druid/conf/druid/_common/common.runtime.properties
+    sed -ri 's#druid.storage.baseKey.*#druid.storage.baseKey='${DRUID_STORAGE_BASE_KEY}'#g' /opt/druid/conf/druid/_common/common.runtime.properties
+fi
+
+if [ "$DRUID_INDEXER_LOGS_TYPE" == "s3" ]; then
+    sed -ri 's/druid.indexer.logs.type.*/druid.indexer.logs.type='${DRUID_INDEXER_LOGS_TYPE}'/g' /opt/druid/conf/druid/_common/common.runtime.properties
+    sed -ri 's#druid.indexer.logs.s3Bucket.*#druid.indexer.logs.s3Bucket='${DRUID_INDEXER_LOGS_S3_BUCKET}'#g' /opt/druid/conf/druid/_common/common.runtime.properties
+    sed -ri 's#druid.indexer.logs.s3Prefix.*#druid.indexer.logs.s3Prefix='${DRUID_INDEXER_LOGS_S3_PREFIX}'#g' /opt/druid/conf/druid/_common/common.runtime.properties
 fi
 
 # if [ "$DRUID_SEGMENTCACHE_LOCATION" != "-" ]; then
