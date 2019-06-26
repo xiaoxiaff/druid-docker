@@ -31,9 +31,10 @@ RUN apk update \
     && apk add --no-cache bash curl \
     && mkdir /tmp/druid \
     && curl \
-    http://static.druid.io/artifacts/releases/druid-$DRUID_VERSION-bin.tar.gz | tar -xzf - -C /opt \
-    && ln -s /opt/druid-$DRUID_VERSION /opt/druid
-RUN curl http://static.druid.io/artifacts/releases/mysql-metadata-storage-$DRUID_VERSION.tar.gz | tar -xzf - -C /opt/druid/extensions
+    http://apache.claz.org/incubator/druid/0.14.2-incubating/apache-druid-0.14.2-incubating-bin.tar.gz  | tar -xzf - -C /opt \
+    && ln -s /opt/apache-druid-0.14.2-incubating /opt/druid
+RUN curl http://static.druid.io/artifacts/releases/mysql-metadata-storage-$DRUID_VERSION.tar.gz | tar -xzf - -C /tmp
+RUN cp /tmp/mysql-metadata-storage/mysql-connector-java-5.1.38.jar /opt/druid/extensions/mysql-metadata-storage/
 
 COPY conf /opt/druid/conf
 COPY start-druid.sh /start-druid.sh

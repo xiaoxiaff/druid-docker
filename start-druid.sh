@@ -9,6 +9,13 @@ fi
 
 DB_CONNECT_URI="jdbc:${DB_TYPE}\:\/\/${DB_HOST}\:${DB_PORT}\/${DB_DBNAME}"
 
+echo "DB Connection URI is: ${DB_CONNECT_URI}"
+echo "Druid S3 Access Key is: ${DRUID_S3_ACCESS_KEY}"
+echo "Druid S3 Secret Key is: ${DRUID_S3_SECRET_KEY}"
+echo "Druid Host Name is: ${DRUID_HOSTNAME}"
+echo "Druid Storage Type is: ${DRUID_STORAGE_TYPE}, ${DRUID_STORAGE_TYPE}: ${DRUID_STORAGE_BUCKET}, ${DRUID_STORAGE_BASE_KEY}"
+echo "Parameter is: ${1:0:1}"
+
 sed -ri 's#druid.zk.service.host.*#druid.zk.service.host='${ZOOKEEPER_HOST}'#g' /opt/druid/conf/druid/_common/common.runtime.properties
 sed -ri 's#druid.metadata.storage.type.*#druid.metadata.storage.type='${DB_TYPE}'#g' /opt/druid/conf/druid/_common/common.runtime.properties
 sed -ri 's#druid.metadata.storage.connector.connectURI.*#druid.metadata.storage.connector.connectURI='${DB_CONNECT_URI}'#g' /opt/druid/conf/druid/_common/common.runtime.properties
@@ -55,5 +62,5 @@ fi
 # if [ "$DRUID_DEEPSTORAGE_LOCAL_DIR" != "-" ]; then
 #     sed -ri 's/druid.storage.storageDirectory=.*/druid.storage.storageDirectory='${DRUID_DEEPSTORAGE_LOCAL_DIR}'/g' /opt/druid/conf/druid/_common/common.runtime.properties
 # fi
-
-java ${JAVA_OPTS} -cp /opt/druid/conf/druid/_common:/opt/druid/conf/druid/$1:/opt/druid/lib/* io.druid.cli.Main server $@
+echo "java ${JAVA_OPTS} -cp /opt/druid/conf/druid/_common:/opt/druid/conf/druid/${1}:/opt/druid/lib/* org.apache.druid.cli.Main server ${@}"
+java ${JAVA_OPTS} -cp /opt/druid/conf/druid/_common:/opt/druid/conf/druid/$1:/opt/druid/lib/* org.apache.druid.cli.Main server $@
